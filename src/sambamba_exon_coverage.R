@@ -129,6 +129,7 @@ for(panel in unique(tbl$pan_number)){
   num_target_regions <- length(unique(df$region))
   print(paste("Number of target regions =", num_target_regions))
 
+  # Skip if too many points to plot
   if( num_target_regions < 3000){
   # Generate static plot of data for each
   print("Generating static ggplot")
@@ -149,16 +150,16 @@ for(panel in unique(tbl$pan_number)){
   filename <- paste0(run_ID, "_", panel)
   
   
-  # Save interactive plot as a single html file:
-  if( num_target_regions < 3000){
+  # Save interactive plot as a single html file - Skip if too many points to plot
+  if( num_target_regions < 3000){ 
   filepath <- paste0(output_directory, '/', filename, "_coverage.html")
-  print(paste0("Saving file", filepath))
+  print(paste0("Saving file ", filepath))
   saveWidget(ggplotly(interactive_plot), file = filepath)
   }
   
   # Save simplified plot to pdf:
   filepath <- paste0(output_directory, "/", filename, "_coverage.png")
-  print(paste0("Saving file", filepath))
+  print(paste0("Saving file ", filepath))
   ggsave(filename = filepath, 
          simplified_plot,
          device = "png",
@@ -167,7 +168,7 @@ for(panel in unique(tbl$pan_number)){
          units = "mm")
   # Save table
   filepath <- paste0(output_directory, "/", filename, "_coverage.csv")
-  print(paste0("Saving file", filepath))
+  print(paste0("Saving file ", filepath))
   summary_df <- df %>% 
     group_by(region) %>% 
   # Summarise data by region
