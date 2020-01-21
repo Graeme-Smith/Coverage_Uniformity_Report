@@ -26,7 +26,7 @@ generate_coverage_plot <- function(df, panel) {
       plot.title = element_text(size=11),
       axis.text.x = element_text(angle = 45, hjust = 1, size = 6)
     ) +
-    ggtitle(paste0("Run ", run_name,",  ", panel ," (", num_target_regions," target regions), Coverage over ", num_samples," samples")) +
+    ggtitle(paste0("Run ", run_ID,",  ", panel ," (", num_target_regions," target regions), Coverage over ", num_samples," samples")) +
     xlab("Target Region") +
     ylab("Scaled average coverage")
   return(p)
@@ -53,9 +53,9 @@ generate_simple_coverage_plot <- function(df, panel) {
     theme(
       legend.position = "none",
       plot.title = element_text(size=11),
-      axis.text.x = element_text(angle = 45, hjust = 1, size = 1)
+      axis.title.x = element_blank() 
     ) +
-    ggtitle(paste0("Run ", run_name,",  ", panel ," (", num_target_regions," target regions), Coverage over ", num_samples," samples")) +
+    ggtitle(paste0("Run ", run_ID,",  ", panel ," (", num_target_regions," target regions), Coverage over ", num_samples," samples")) +
     xlab("Target Region") +
     ylab("Scaled average coverage")
 }
@@ -113,12 +113,13 @@ tbl$pan_number <- stringr::str_split(string = tbl$sample_id, pattern = "_", simp
 # Produce separate output for each panel
 
 # Extract meta data from sample name
-for(run_name in unique(tbl$run_name)){
-  print(paste("Processing run name =", run_name))
+for(run_ID in unique(tbl$run_name)){
+  print(paste("Processing run name =", run_ID))
 for(panel in unique(tbl$pan_number)){
-  print(paste("Processing panel number =", run_name))
+  print(paste("Processing panel number =", run_ID))
   
   df <- tbl[tbl$pan_number==panel,]
+  df <- df[tbl$run_name==run_ID,]
   
   # Update number of samples to be plotted 
   num_samples <- length(unique(df$sample_id))
@@ -128,6 +129,7 @@ for(panel in unique(tbl$pan_number)){
   num_target_regions <- length(unique(df$region))
   print(paste("Number of target regions =", num_target_regions))
 
+  if( num_target_regions < 3000){
   # Generate static plot of data for each
   print("Generating static ggplot")
   static_plot <- generate_coverage_plot(df, panel)
@@ -135,25 +137,31 @@ for(panel in unique(tbl$pan_number)){
   # Add interactivity to plot:
   print("Generating Interactive plot")
   interactive_plot <- ggplotly(static_plot)
+  } else {
+  print(paste0("No interactive graph produced as nmber of regions,", num_target_regions, " ,is too large"))
+  }
   
   # Create coverage plot of means for PDF
   print("Generating simplified plot")
   simplified_plot <- generate_simple_coverage_plot(df, panel)
   
   # Generate file name:
-  filename <- paste0(run_name, "_", panel)
+  filename <- paste0(run_ID, "_", panel)
+  
   
   # Save interactive plot as a single html file:
+  if( num_target_regions < 3000){
   filepath <- paste0(output_directory, '/', filename, "_coverage.html")
   print(paste0("Saving file", filepath))
   saveWidget(ggplotly(interactive_plot), file = filepath)
-
+  }
+  
   # Save simplified plot to pdf:
-  filepath <- paste0(output_directory, "/", filename, "_coverage.pdf")
+  filepath <- paste0(output_directory, "/", filename, "_coverage.png")
   print(paste0("Saving file", filepath))
   ggsave(filename = filepath, 
          simplified_plot,
-         device = "pdf",
+         device = "png",
          width = 297,
          height = 200,
          units = "mm")
@@ -164,7 +172,7 @@ for(panel in unique(tbl$pan_number)){
     group_by(region) %>% 
   # Summarise data by region
       summarise(gene = unique(gene),
-              run_name = unique(run_name),
+              run_name = unique(run_ID),
               panel = unique(panel),
               transcript = unique(transcript),
               genomicCoordinates = unique(genomicCoordinates),
