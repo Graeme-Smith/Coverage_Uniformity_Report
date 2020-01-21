@@ -19,6 +19,7 @@
 set -e -x -o pipefail
 
 echo $selected_project
+echo $data_folder
 
 main() {
     # SET VARIABLES
@@ -47,5 +48,5 @@ main() {
     docker run -v /home/dnanexus:/home --rm graemesmith/uniform-coverage Rscript "/src/sambamba_exon_coverage.R"  "/home" "/home/coverage/uniformity_metrics" ".sambamba_output.bed"
 
     # Upload results to DNA nexus
-    dx upload /home/dnanexus/coverage/uniformity_metrics --recursive --path $selected_project:coverage/uniformity_metrics
+    dx upload /home/dnanexus/coverage/uniformity_metrics --recursive --path $selected_project:$data_folder
 }
