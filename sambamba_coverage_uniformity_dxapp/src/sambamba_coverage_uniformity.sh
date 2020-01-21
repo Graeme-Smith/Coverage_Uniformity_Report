@@ -34,7 +34,7 @@ main() {
 
     # Call the docker image. This image is saved as a compressed tarball on DNAnexus, bundled with the app.
     # Download the docker tarball - graemesmith_uniform_coverage.tar.gz
-    dx download project-ByfFPz00jy1fk6PjpZ95F27J:file-FjQ8Kf00jy1xG0ykGjF3z4q7
+    dx download project-ByfFPz00jy1fk6PjpZ95F27J:file-FjYXPpQ0jy1y83b92fpvpkZK
 
     # Give all users access to docker.sock
     sudo chmod 666 /var/run/docker.sock
