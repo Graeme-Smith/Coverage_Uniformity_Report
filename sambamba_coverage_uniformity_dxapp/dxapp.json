@@ -11,7 +11,15 @@
       "class": "string",
       "optional": false,
       "help": ""
-    }
+    },
+          {
+    "name": "data_folder",
+    "label": "Name of folder containing Sambamba coverage bedfiles",
+    "class": "string",
+    "optional":false,
+    "default": "coverage/uniformity_metrics",
+    "help": "Typically coverage/uniformity_metrics"
+          }
   ],
     "outputSpec": [
     {
